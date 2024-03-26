@@ -1,2 +1,2 @@
 # MADE-IN-HEAVEN
-Records ripemangobox's learning experience.
+Records learning experience of RipeMangoBox.
