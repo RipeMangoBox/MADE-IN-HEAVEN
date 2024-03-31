@@ -109,23 +109,18 @@ $$V_i = W^{V}* x_i$$
 若是对于cross-attention，则Q和KV不来自同一个序列，Q需改为
 $$Q_{i} = W^{Q} * y_{i}$$
 上述权重矩阵$`W^Q,W^K,W^V`$均通过网络学习获得。需要注意的是：
-1. $`W^Q,W^K,W^V`$通过整个训练数据集的学习得到，在一个*Scaled Dot Product-Attention*模块中共享，但是在*Multi-Head Attention*的不同head之间不共享。（即下图中，不同图层构成不同的*Scaled Dot Product-Attention*，他们有各自的$`W^Q,W^K,W^V`$)![Pasted image 20240318154149](https://github.com/RipeMangoBox/STARRY/assets/134421090/39ce0ea8-06c0-46f0-9d25-ae1639217aeb)
-
-2. 不要混淆$`W^Q$，$Q_{i}`$，$`U^{Q}`$的概念（对K和V同理）：
-	1. $`W^Q`$是每个*Scaled Dot Product-Attention*内部共享的，在heads之间不共享。
-	2. $`Q_{i`}$是输入$`x_{i}`$经过$`W^{Q}`$线性映射获得的，在一个*Scaled Dot Product-Attention*内部，对同一个$`x_{i}`$获得相同的$`Q_{i}`$，对不同的$`x_{i}`$获得不同的$`Q_{i}`$；在不同的heads之间则由于$`W^Q`$不同而不同。
-	3. $`U^{Q}_{i}`$用于将不同heads之间的$`Q_{i}`$投影拼接，每个head有各自的$`U^{Q}_{i}`$。(本文用U代替Attention文章中multi-head拼接的权重W)
-下面一段代码用于说明这三点，其中`self.linear = nn.Linear(d_model, heads * d_k, bias=bias)`实际上已经包含了$`U^{Q}_{1}`$到$`U^{Q}_{heads}`$，因为nn.linear后，`x = x.view(*head_shape, self.heads, self.d_k)`将结果划分为heads个部分。
-![[shared weight matrix test.py]]
+$`W^Q,W^K,W^V`$通过整个训练数据集的学习得到，在一个*Scaled Dot Product-Attention*模块中共享，但是在*Multi-Head Attention*的不同head之间不共享。（即下图中，不同图层构成不同的*Scaled Dot Product-Attention*，他们有各自的$`W^Q,W^K,W^V`$)![Pasted image 20240318154149](https://github.com/RipeMangoBox/STARRY/assets/134421090/39ce0ea8-06c0-46f0-9d25-ae1639217aeb)
 
 ### QKV是向量还是矩阵
 QKV可以是向量，其中*query和key都由维度为$`d_{k}`$*，value的维度为$`d_{v}`$ ； 也可以是矩阵，矩阵由若干向量拼接而成，方便并行化处理。
 ![Pasted image 20240318152931](https://github.com/RipeMangoBox/STARRY/assets/134421090/9e20e9cb-8e59-4a37-a371-f3ca679d3502)
 
 换句话说，QKV都由一系列*行特征向量*组成，维度：
-$Q$: $N \times d_{k}$
-$K$: $M \times d_{k}$
-$V$: $M \times d_{v}$
+$`Q`$: $`N \times d_{k}`$
+
+$`K`$: $`M \times d_{k}`$
+
+$`V`$: $`M \times d_{v}`$
 
 ### 理解QKV的关系
 以图书借阅请求为例。
