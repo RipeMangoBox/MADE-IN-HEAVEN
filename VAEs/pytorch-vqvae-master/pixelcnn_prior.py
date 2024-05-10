@@ -64,8 +64,8 @@ def generate_samples(images, labels, model, prior, args):
         logits = prior(latents, labels)
         logits = logits.permute(0, 2, 3, 1).contiguous()
 
-        latent_HW = model.get_latent_HW(images.shape[1:])
-        predicted_latents = prior.generate(labels, (latent_HW, latent_HW), args.sample_num)
+        latent_H, latent_W = model.get_latent_HW(images.shape[1:])
+        predicted_latents = prior.generate(labels, (latent_H, latent_W), args.sample_num)
 
         x_tilde = model.decode(predicted_latents)
 

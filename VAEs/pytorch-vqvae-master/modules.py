@@ -153,7 +153,8 @@ class VectorQuantizedVAE(nn.Module):
     def forward(self, x):
         z_e_x = self.encoder(x)
         z_q_x_st, z_q_x = self.codebook.straight_through(z_e_x)
-        x_tilde = self.decoder(z_q_x_st)
+        # x_tilde = self.decoder(z_q_x_st)
+        x_tilde = self.decoder(z_e_x + (z_q_x - z_e_x).detach())
         return x_tilde, z_e_x, z_q_x
     
     # Shape: [C, H, W]

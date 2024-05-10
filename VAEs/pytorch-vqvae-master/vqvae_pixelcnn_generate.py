@@ -67,7 +67,6 @@ def generate():
         prior.load_state_dict(state_dict)
     prior.eval()
 
-
     with torch.no_grad():
         labels = torch.arange(10).expand(10, 10).contiguous().view(-1).to(args.device)
         generate_samples(labels, 'cifar10')
